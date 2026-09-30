@@ -36,10 +36,10 @@ android {
 
         testInstrumentationRunner = "eu.darken.butler.HiltTestRunner"
 
-        buildConfigField("String", "PACKAGENAME", ""${projectConfig.packageName}"")
-        buildConfigField("String", "GITSHA", ""${commitHashProvider.get()}"")
-        buildConfigField("String", "VERSION_CODE", ""${projectConfig.version.code}"")
-        buildConfigField("String", "VERSION_NAME", ""${projectConfig.version.name}"")
+        buildConfigField("String", "PACKAGENAME", "\"${projectConfig.packageName}\"")
+        buildConfigField("String", "GITSHA", "\"${commitHashProvider.get()}\"")
+        buildConfigField("String", "VERSION_CODE", "\"${projectConfig.version.code}\"")
+        buildConfigField("String", "VERSION_NAME", "\"${projectConfig.version.name}\"")
     }
 
     signingConfigs {
