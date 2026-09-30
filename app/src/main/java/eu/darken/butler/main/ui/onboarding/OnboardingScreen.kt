@@ -14,12 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewWrapper as ComposePreviewWrapper
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import eu.darken.butler.common.compose.ButlerPreviewWrapper
 import eu.darken.butler.common.compose.Preview2
-import eu.darken.butler.common.compose.PreviewWrapper
 import eu.darken.butler.common.error.ErrorEventHandler
 import eu.darken.butler.common.navigation.NavigationEventHandler
 import androidx.compose.runtime.collectAsState
@@ -41,9 +39,6 @@ fun OnboardingScreenHost(vm: OnboardingViewModel = hiltViewModel()) {
     state?.let { state ->
         OnboardingScreen(
             state = state,
-            onUpdateCheckChange = { vm.setUpdateCheckEnabled(it) },
-            onMotdCheckChange = { vm.setMotdCheckEnabled(it) },
-            onReadPrivacyPolicy = { vm.readPrivacyPolicy() },
             onFinishOnboarding = vm::completeOnboarding,
         )
     }
@@ -52,9 +47,6 @@ fun OnboardingScreenHost(vm: OnboardingViewModel = hiltViewModel()) {
 @Composable
 private fun OnboardingScreen(
     state: OnboardingViewModel.State,
-    onUpdateCheckChange: (Boolean) -> Unit,
-    onMotdCheckChange: (Boolean) -> Unit,
-    onReadPrivacyPolicy: () -> Unit,
     onFinishOnboarding: () -> Unit,
 ) {
 
@@ -125,11 +117,6 @@ private fun OnboardingScreen(
 
                 Page.PRIVACY ->
                     PrivacyPage(
-                        isUpdateCheckEnabled = state.isUpdateCheckEnabled,
-                        onUpdateCheckChange = onUpdateCheckChange,
-                        isMotdCheckEnabled = state.isMotdCheckEnabled,
-                        onMotdCheckChange = onMotdCheckChange,
-                        onReadPrivacyPolicy = onReadPrivacyPolicy,
                         onAccept = { onFinishOnboarding() }
                     )
             }
@@ -138,14 +125,10 @@ private fun OnboardingScreen(
 }
 
 @Preview2
-@ComposePreviewWrapper(ButlerPreviewWrapper::class)
 @Composable
 private fun OnboardingScreenPreview() {
     OnboardingScreen(
         state = OnboardingViewModel.State(),
-        onUpdateCheckChange = {},
-        onMotdCheckChange = {},
-        onReadPrivacyPolicy = {},
         onFinishOnboarding = {},
     )
 }

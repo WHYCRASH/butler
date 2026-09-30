@@ -9,8 +9,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class UpdaterModule {
-
     @Binds
     @Singleton
-    abstract fun updateChecker(checker: FossUpdateChecker): UpdateChecker
+    abstract fun bindUpdateChecker(checker: NoOpUpdateChecker): UpdateChecker
 }

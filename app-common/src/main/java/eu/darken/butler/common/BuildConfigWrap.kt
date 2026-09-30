@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.annotation.Keep
 import java.lang.reflect.Field
 
-
 @Keep
 object BuildConfigWrap {
     val APPLICATION_ID = getBuildConfigValue("PACKAGENAME") as String
@@ -24,17 +23,10 @@ object BuildConfigWrap {
         ;
     }
 
-    val FLAVOR: Flavor = when (val flav = getBuildConfigValue("FLAVOR") as String?) {
-        "gplay" -> Flavor.GPLAY
-        "foss" -> Flavor.FOSS
-        null -> Flavor.NONE
-        else -> throw IllegalStateException("Unknown flavor: $flav")
-    }
+    val FLAVOR: Flavor = Flavor.FOSS
 
     enum class Flavor {
-        GPLAY,
         FOSS,
-        NONE,
         ;
     }
 
@@ -42,8 +34,8 @@ object BuildConfigWrap {
     val VERSION_NAME: String = getBuildConfigValue("VERSION_NAME") as String
     val GIT_SHA: String = getBuildConfigValue("GITSHA") as String
 
-    val VERSION_DESCRIPTION: String = "v$VERSION_NAME ($VERSION_CODE) ~ $GIT_SHA/$FLAVOR/$BUILD_TYPE"
-    val VERSION_DESCRIPTION_SHORT: String = "v$VERSION_NAME ~ $FLAVOR"
+    val VERSION_DESCRIPTION: String = "v$VERSION_NAME ($VERSION_CODE) ~ $GIT_SHA/$BUILD_TYPE"
+    val VERSION_DESCRIPTION_SHORT: String = "v$VERSION_NAME"
 
     private fun getBuildConfigValue(fieldName: String): Any? = try {
         val c = Class.forName("eu.darken.butler.BuildConfig")
