@@ -15,7 +15,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flavor: [ Foss,Gplay ]
         variant: [ Beta,Release ]
         module: [ app ]
     runs-on: ubuntu-22.04
@@ -28,14 +27,13 @@ jobs:
         uses: ./.github/actions/common-setup
 
       - name: Check for fatal lint issues
-        run: ./gradlew lintVital${{ matrix.flavor }}${{ matrix.variant }}
+        run: ./gradlew lintVital${{ matrix.variant }}
 
   build-modules:
     name: Build apps
     strategy:
       fail-fast: false
       matrix:
-        flavor: [ Foss,Gplay ]
         variant: [ Debug ]
         module: [ app ]
     runs-on: ubuntu-22.04
@@ -47,13 +45,12 @@ jobs:
       - name: Setup project and build environment
         uses: ./.github/actions/common-setup
         with:
-          robolectric-cache-scope: ${{ matrix.flavor == 'Foss' && 'saf-test-provider' || '' }}
+          robolectric-cache-scope: 'saf-test-provider'
 
       - name: Build modules
-        run: ./gradlew ${{ matrix.module }}:assemble${{ matrix.flavor }}${{ matrix.variant }}
+        run: ./gradlew ${{ matrix.module }}:assemble${{ matrix.variant }}
 
       - name: Build and test SAF test provider
-        if: matrix.flavor == 'Foss'
         run: ./gradlew :saf-test-provider:assembleDebug :saf-test-provider:testDebugUnitTest
 
       - name: Save Robolectric SDK jars
@@ -66,10 +63,6 @@ jobs:
       fail-fast: false
       matrix:
         variant: [ Debug ]
-        # These two flavors cover modules carrying the `version` dimension.
-        # The unflavored SAF test fixture is excluded on purpose and covered by
-        # the explicit build and test step in build-modules instead.
-        flavor: [ testFoss,testGplay ]
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout source code
@@ -82,7 +75,7 @@ jobs:
           robolectric-cache-scope: modules
 
       - name: Test modules
-        run: ./gradlew ${{ matrix.flavor }}${{ matrix.variant }}UnitTest
+        run: ./gradlew test${{ matrix.variant }}UnitTest
 
       - name: Save Robolectric SDK jars
         if: ${{ !cancelled() }}
@@ -170,7 +163,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
         if: always()
         with:
-          name: test-results-${{ matrix.flavor }}-${{ matrix.variant }}
+          name: test-results-${{ matrix.variant }}
           path: |
             **/build/test-results/**/*.xml
             **/build/reports/tests/**/*
@@ -180,7 +173,7 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
         if: failure()
         with:
-          name: test-jvm-crash-${{ matrix.flavor }}-${{ matrix.variant }}
+          name: test-jvm-crash-${{ matrix.variant }}
           path: |
             **/build/test-jvm-crash/**
             **/hs_err_pid*.log
@@ -208,7 +201,7 @@ jobs:
         run: ./gradlew :lib-smb:koverXmlReport :lib-smb:koverHtmlReport
 
       - name: Exercise the app gateway against Samba
-        run: ./gradlew :app-common-io:testFossDebugUnitTest --tests '*SmbGatewayIntegrationTest' --rerun --no-build-cache
+        run: ./gradlew :app-common-io:testDebugUnitTest --tests '*SmbGatewayIntegrationTest' --rerun --no-build-cache
 
       - name: Require executed integration suites and summarize coverage
         run: |
@@ -226,7 +219,7 @@ jobs:
               "SMBJ reference": Path("lib-smb/build/test-results/contractTest/TEST-eu.darken.smb.SmbjContractTest.xml"),
               "Kotlin implementation": Path("lib-smb/build/test-results/contractTest/TEST-eu.darken.smb.KotlinSmbContractTest.xml"),
               "Security and transport": Path("lib-smb/build/test-results/contractTest/TEST-eu.darken.smb.ProtocolSecurityTest.xml"),
-              "App gateway": Path("app-common-io/build/test-results/testFossDebugUnitTest/TEST-eu.darken.butler.common.files.smb.SmbGatewayIntegrationTest.xml"),
+              "App gateway": Path("app-common-io/build/test-results/testDebugUnitTest/TEST-eu.darken.butler.common.files.smb.SmbGatewayIntegrationTest.xml"),
           }
           summary = ["## SMB Docker integration", "", "| Suite | Passed |", "| --- | ---: |"]
           for label, path in suites.items():
@@ -268,8 +261,8 @@ jobs:
             lib-smb/build/test-results/**/*.xml
             lib-smb/build/reports/tests/**
             lib-smb/build/reports/kover/**
-            app-common-io/build/test-results/testFossDebugUnitTest/**/*.xml
-            app-common-io/build/reports/tests/testFossDebugUnitTest/**
+            app-common-io/build/test-results/testDebugUnitTest/**/*.xml
+            app-common-io/build/reports/tests/testDebugUnitTest/**
           if-no-files-found: error
           retention-days: 14
 
