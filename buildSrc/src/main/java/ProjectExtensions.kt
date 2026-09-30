@@ -136,25 +136,25 @@ fun Test.setupTestLogging() {
             override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {}
             override fun afterSuite(suite: TestDescriptor, result: TestResult) {
                 val label = if (suite.parent == null) "TASK RESULT" else "SUITE RESULT"
-                val messages = ""${'"'}${'"'}
+                val messages = """
                     ------------------------------------------------------------------------------------------------
-                    | $label: ${'$'}{result.resultType} ${'$'}{result.testCount} tests: ${'$'}{result.successfulTestCount} passed, ${'$'}{result.failedTestCount} failed, ${'$'}{result.skippedTestCount} skipped)
+                    | $label: ${result.resultType} ${result.testCount} tests: ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)
                     ------------------------------------------------------------------------------------------------
 
-                ""${'"'}${'"'}.trimIndent()
+                """.trimIndent()
                 println(messages)
 
                 if (suite.parent == null && result.resultType == TestResult.ResultType.FAILURE && result.failedTestCount == 0L) {
                     println(
-                        ""${'"'}${'"'}
+                        """
                         ################################################################################################
                         # TEST JVM WORKER DEATH SUSPECTED
-                        # The test task failed but zero test cases reported a failure (${'$'}{result.skippedTestCount} skipped).
+                        # The test task failed but zero test cases reported a failure (${result.skippedTestCount} skipped).
                         # That combination means the worker JVM died instead of the tests failing.
                         # Check the raw Gradle worker output above and build/test-jvm-crash/ for hs_err/heap dumps.
                         ################################################################################################
 
-                        ""${'"'}${'"'}.trimIndent()
+                        """.trimIndent()
                     )
                 }
             }
