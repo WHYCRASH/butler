@@ -10,10 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.twotone.ListAlt
 import androidx.compose.material.icons.twotone.ContentPaste
 import androidx.compose.material.icons.twotone.Favorite
-import androidx.compose.material.icons.twotone.Info
-import androidx.compose.material.icons.twotone.PrivacyTip
 import androidx.compose.material.icons.twotone.Settings
-import androidx.compose.material.icons.twotone.Stars
 import androidx.compose.material.icons.twotone.Tune
 import androidx.compose.material.icons.twotone.Workspaces
 import androidx.compose.material3.AlertDialog
@@ -38,10 +35,8 @@ import androidx.compose.ui.tooling.preview.PreviewWrapper as ComposePreviewWrapp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import eu.darken.butler.R
 import eu.darken.butler.common.ButlerLinks
-import eu.darken.butler.common.compose.ButlerAppTitle
 import eu.darken.butler.common.compose.ButlerPreviewWrapper
 import eu.darken.butler.common.compose.Preview2
-import eu.darken.butler.common.compose.PreviewWrapper
 import eu.darken.butler.common.error.ErrorEventHandler
 import eu.darken.butler.common.navigation.Nav
 import eu.darken.butler.common.navigation.NavigationDestination
@@ -55,7 +50,6 @@ import eu.darken.butler.editor.ui.editor
 import eu.darken.butler.explorer.ui.explorer
 import eu.darken.butler.history.ui.history
 import eu.darken.butler.searcher.ui.searcher
-import eu.darken.butler.upgrade.UpgradeRepo
 import eu.darken.butler.viewer.ui.viewer
 import eu.darken.butler.workspace.core.Workspace
 import eu.darken.butler.workspace.core.icon
@@ -130,18 +124,11 @@ fun SettingsIndexScreen(
                 title = {
                     Column {
                         Text(stringResource(R.string.settings_label))
-                        if (state.isUpgraded) {
-                            ButlerAppTitle(
-                                isUpgraded = true,
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(eu.darken.butler.common.R.string.app_name),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                            )
-                        }
+                        Text(
+                            text = stringResource(eu.darken.butler.common.R.string.app_name),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                        )
                     }
                 },
                 navigationIcon = {
@@ -257,32 +244,6 @@ fun SettingsIndexScreen(
 
             item {
                 SettingsBaseItem(
-                    icon = Icons.TwoTone.Stars,
-                    title = stringResource(R.string.settings_upgrade_status_label),
-                    subtitle = when {
-                        state.isUpgraded && state.upgradeType == UpgradeRepo.Type.GPLAY ->
-                            stringResource(R.string.upgrade_status_pro)
-                        state.isUpgraded && state.upgradeType == UpgradeRepo.Type.FOSS ->
-                            stringResource(R.string.upgrade_status_foss)
-                        else -> stringResource(R.string.upgrade_status_free)
-                    },
-                    onClick = { onNavigateTo(Nav.Settings.upgradeStatus()) },
-                )
-                SettingsDivider()
-            }
-
-            item {
-                SettingsBaseItem(
-                    icon = Icons.TwoTone.Info,
-                    title = stringResource(R.string.settings_support_label),
-                    subtitle = stringResource(R.string.settings_support_description),
-                    onClick = { onNavigateTo(Nav.Settings.support()) },
-                )
-                SettingsDivider()
-            }
-
-            item {
-                SettingsBaseItem(
                     icon = Icons.AutoMirrored.TwoTone.ListAlt,
                     title = stringResource(R.string.changelog_label),
                     subtitle = state.versionText,
@@ -318,16 +279,6 @@ fun SettingsIndexScreen(
                     subtitle = stringResource(R.string.settings_acknowledgements_description),
                     onClick = { onNavigateTo(Nav.Settings.acks()) },
                 )
-                SettingsDivider()
-            }
-
-            item {
-                SettingsBaseItem(
-                    icon = Icons.TwoTone.PrivacyTip,
-                    title = stringResource(R.string.settings_privacy_policy_label),
-                    subtitle = stringResource(R.string.settings_privacy_policy_desc),
-                    onClick = { onOpenUrl(ButlerLinks.PRIVACY_POLICY) },
-                )
             }
 
         }
@@ -339,10 +290,7 @@ fun SettingsIndexScreen(
 @Composable
 private fun SettingsScreenPreview() {
     SettingsIndexScreen(
-        state = SettingsViewModel.State(
-            isUpgraded = true,
-            upgradeType = UpgradeRepo.Type.GPLAY,
-        ),
+        state = SettingsViewModel.State(),
         onNavigateUp = {},
         onNavigateTo = {},
         onOpenUrl = {},
